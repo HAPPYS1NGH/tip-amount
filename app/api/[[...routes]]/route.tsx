@@ -33,7 +33,7 @@ async function fetchTokenPrice(token: string): Promise<string> {
   }
 }
 
-export async function getTokenPrices(
+async function getTokenPrices(
   tokens: string[]
 ): Promise<{ [key: string]: string }> {
   const fetchPromises = tokens.map((token) => fetchTokenPrice(token));
