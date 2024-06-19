@@ -28,7 +28,11 @@ interface TokenPriceResponse {
 }
 async function fetchTokenPrice(token: string): Promise<string> {
   try {
-    const res = await fetch(`https://www.farcaster.in/api/tokens/${token}`);
+    const res = await fetch(`https://www.farcaster.in/api/tokens/${token}`, {
+      next: {
+        revalidate: 600,
+      },
+    });
     if (!res.ok) return "-";
     const data: TokenPriceResponse = await res.json();
     const worthADollar = 1 / parseFloat(data?.stats.base_token_price_usd);
