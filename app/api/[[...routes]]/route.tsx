@@ -23,9 +23,9 @@ interface TokenPriceResponse {
 async function fetchTokenPrice(token: string): Promise<string> {
   try {
     const res = await fetch(`https://www.farcaster.in/api/tokens/${token}`);
-    if (!res.ok) throw new Error(`Failed to fetch ${token}`);
+    if (!res.ok) return "-";
     const data: TokenPriceResponse = await res.json();
-    const worthADollar = 1 / parseFloat(data.stats.base_token_price_usd);
+    const worthADollar = 1 / parseFloat(data?.stats.base_token_price_usd);
     return formatToSignificantFigures(worthADollar);
   } catch (error) {
     console.error(`Error fetching data for ${token}:`, error);
@@ -215,10 +215,136 @@ app.frame("/", async (c) => {
       </div>
     ),
     intents: [
-      <TextInput placeholder="Enter token name" />,
-      <Button action="fetchCurrent">Current Price</Button>,
-      <Button action="fetchCustomToken">Token Price</Button>,
+      <TextInput placeholder="Enter token name" />, // Add name attribute to capture the input
+      <Button action="/token">Token Price</Button>,
     ],
+  });
+});
+
+app.frame("/token", async (c) => {
+  const { inputText } = c;
+  console.log("//////\\\\//////");
+  console.log(inputText);
+  let image;
+  if (!inputText) {
+    image = (
+      <div style={{ display: "flex", fontSize: "4rem" }}>
+        Please enter a token name
+      </div>
+    );
+  } else {
+    const price = await fetchTokenPrice(inputText);
+    console.log("price", price);
+
+    if (price == "-") {
+      image = (
+        <div style={{ display: "flex", fontSize: "4rem" }}>
+          No data found for {inputText}
+        </div>
+      );
+    } else {
+      image = (
+        <div
+          style={{
+            color: "white",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          <h1
+            style={{
+              fontSize: "4rem",
+              fontWeight: "bold",
+            }}
+          >
+            Tip Exchange Rate
+          </h1>
+          <div
+            style={{
+              display: "flex",
+              backgroundColor: "white",
+              padding: "2rem 4rem",
+              color: "black",
+              borderRadius: "1rem",
+              margin: "2rem",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "7rem",
+              fontSize: "2rem",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <h1>💰</h1>
+              <h1
+                style={{
+                  lineHeight: "0.25rem",
+                }}
+              >
+                $1
+              </h1>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <h1>=</h1>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <h1>💰</h1>
+              <h1
+                style={{
+                  lineHeight: "0.25rem",
+                }}
+              >
+                {price}
+              </h1>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  }
+  return c.res({
+    image: (
+      <div
+        style={{
+          alignItems: "center",
+          backgroundColor: "#8863d1",
+          backgroundSize: "100% 100%",
+          display: "flex",
+          flexDirection: "column",
+          flexWrap: "nowrap",
+          height: "100%",
+          justifyContent: "center",
+          textAlign: "center",
+          width: "100%",
+          color: "white",
+        }}
+      >
+        {image}
+      </div>
+    ),
+    intents: [<Button action="/">Back</Button>],
   });
 });
 
