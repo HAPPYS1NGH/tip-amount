@@ -23,9 +23,9 @@ interface TokenPriceResponse {
 async function fetchTokenPrice(token: string): Promise<string> {
   try {
     const res = await fetch(`https://www.farcaster.in/api/tokens/${token}`);
-    if (!res.ok) throw new Error(`Failed to fetch ${token}`);
+    if (!res.ok) return "-";
     const data: TokenPriceResponse = await res.json();
-    const worthADollar = 1 / parseFloat(data.stats.base_token_price_usd);
+    const worthADollar = 1 / parseFloat(data?.stats.base_token_price_usd);
     return formatToSignificantFigures(worthADollar);
   } catch (error) {
     console.error(`Error fetching data for ${token}:`, error);
@@ -215,10 +215,33 @@ app.frame("/", async (c) => {
       </div>
     ),
     intents: [
-      <TextInput placeholder="Enter token name" />,
-      <Button action="fetchCurrent">Current Price</Button>,
-      <Button action="fetchCustomToken">Token Price</Button>,
+      <TextInput placeholder="Enter token name" />, // Add name attribute to capture the input
+      <Button action="/token">Token Price</Button>,
     ],
+  });
+});
+
+app.frame("/token", async (c) => {
+  const { inputText } = c;
+  console.log("//////\\\\//////");
+  console.log(inputText);
+  let image;
+  if (!inputText) {
+    image = <div style={{ display: "flex" }}>Please enter a token name</div>;
+  } else {
+    const price = await fetchTokenPrice(inputText);
+    console.log("price", price);
+
+    if (price == "-") {
+      image = (
+        <div style={{ display: "flex" }}>No data found for {inputText}</div>
+      );
+    } else {
+      image = <div style={{ display: "flex" }}>{price}</div>;
+    }
+  }
+  return c.res({
+    image: image,
   });
 });
 
