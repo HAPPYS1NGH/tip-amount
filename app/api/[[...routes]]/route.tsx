@@ -227,21 +227,124 @@ app.frame("/token", async (c) => {
   console.log(inputText);
   let image;
   if (!inputText) {
-    image = <div style={{ display: "flex" }}>Please enter a token name</div>;
+    image = (
+      <div style={{ display: "flex", fontSize: "4rem" }}>
+        Please enter a token name
+      </div>
+    );
   } else {
     const price = await fetchTokenPrice(inputText);
     console.log("price", price);
 
     if (price == "-") {
       image = (
-        <div style={{ display: "flex" }}>No data found for {inputText}</div>
+        <div style={{ display: "flex", fontSize: "4rem" }}>
+          No data found for {inputText}
+        </div>
       );
     } else {
-      image = <div style={{ display: "flex" }}>{price}</div>;
+      image = (
+        <div
+          style={{
+            color: "white",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          <h1
+            style={{
+              fontSize: "4rem",
+              fontWeight: "bold",
+            }}
+          >
+            Tip Exchange Rate
+          </h1>
+          <div
+            style={{
+              display: "flex",
+              backgroundColor: "white",
+              padding: "2rem 4rem",
+              color: "black",
+              borderRadius: "1rem",
+              margin: "2rem",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "7rem",
+              fontSize: "2rem",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <h1>💰</h1>
+              <h1
+                style={{
+                  lineHeight: "0.25rem",
+                }}
+              >
+                $1
+              </h1>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <h1>=</h1>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <h1>💰</h1>
+              <h1
+                style={{
+                  lineHeight: "0.25rem",
+                }}
+              >
+                {price}
+              </h1>
+            </div>
+          </div>
+        </div>
+      );
     }
   }
   return c.res({
-    image: image,
+    image: (
+      <div
+        style={{
+          alignItems: "center",
+          backgroundColor: "#8863d1",
+          backgroundSize: "100% 100%",
+          display: "flex",
+          flexDirection: "column",
+          flexWrap: "nowrap",
+          height: "100%",
+          justifyContent: "center",
+          textAlign: "center",
+          width: "100%",
+          color: "white",
+        }}
+      >
+        {image}
+      </div>
+    ),
+    intents: [<Button action="/">Back</Button>],
   });
 });
 
